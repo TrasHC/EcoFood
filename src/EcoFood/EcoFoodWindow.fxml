@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="640.0" prefWidth="815.0" stylesheets="@foodrecipestyle.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="EcoFood.EcoFoodController">
+   <children>
+      <MenuBar>
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onImportFromECO" text="Import from ECO" />
+                  <MenuItem mnemonicParsing="false" onAction="#onSave" text="Save" />
+                  <MenuItem mnemonicParsing="false" onAction="#onLoad" text="Load" />
+              <MenuItem mnemonicParsing="false" text="Close" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Edit">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#onAddBest" text="Add Best" />
+              </items>
+            </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+      <TabPane prefHeight="600.0" prefWidth="750.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+        <tabs>
+          <Tab text="Food">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <SplitPane dividerPositions="0.6180081855388813" orientation="VERTICAL" prefHeight="370.6666666666667" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <items>
+                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                 <children>
+                                    <TabPane fx:id="tabsFood" prefHeight="309.3333333333333" prefWidth="748.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <tabs>
+                                        <Tab text="Meal Creator">
+                                          <content>
+                                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                   <children>
+                                                      <TableView fx:id="recipeTable" editable="true" focusTraversable="false" onMousePressed="#onPressRecipe" onMouseReleased="#onReleaseRecipe" prefHeight="240.0" prefWidth="755.0" AnchorPane.bottomAnchor="64.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                        <columns>
+                                                            <TableColumn fx:id="colCount" editable="false" prefWidth="40.0" style="-fx-alignment: center;" text="Count" />
+                                                          <TableColumn fx:id="colName" editable="false" prefWidth="120.0" resizable="false" style="-fx-background-color: lightgrey; -fx-alignment: center-left;" text="Name" />
+                                                            <TableColumn fx:id="colCalories" editable="false" prefWidth="50.0" resizable="false" style="-fx-background-color: lightblue; -fx-alignment: center;" text="Calories" />
+                                                            <TableColumn fx:id="colCarbs" editable="false" prefWidth="50.0" resizable="false" style="-fx-background-color: red; -fx-alignment: center;" text="Carbs" />
+                                                            <TableColumn fx:id="colProteins" editable="false" prefWidth="50.0" resizable="false" style="-fx-background-color: orange; -fx-alignment: center;" text="Protein" />
+                                                            <TableColumn fx:id="colFats" editable="false" prefWidth="50.0" resizable="false" style="-fx-background-color: yellow; -fx-alignment: center;" text="Fat" />
+                                                            <TableColumn fx:id="colVitamins" editable="false" prefWidth="50.0" resizable="false" style="-fx-background-color: green; -fx-alignment: center;" text="Vitamin" />
+                                                            <TableColumn fx:id="colTastiness" prefWidth="60.0" resizable="false" style="-fx-background-color: lightgrey; -fx-alignment: center;" text="Tastiness" />
+                                                            <TableColumn fx:id="colNutrients" editable="false" prefWidth="60.0" resizable="false" style="-fx-font-weight: bold; -fx-text-fill: darkred; -fx-alignment: center;" text="Score" />
+                                                            <TableColumn fx:id="colSkill" editable="false" prefWidth="120.0" resizable="false" style="-fx-background-color: lightgrey; -fx-alignment: center-right;" text="Skill" />
+                                                          <TableColumn fx:id="colLvl" editable="false" prefWidth="35.0" resizable="false" style="-fx-background-color: lightgrey; -fx-alignment: center-left;" text="Lvl" />
+                                                            <TableColumn fx:id="colCraftStation" editable="false" prefWidth="110.0" resizable="false" style="-fx-alignment: center-left;" text="Tool" />
+                                                        </columns>
+                                                      </TableView>
+                                                      <GridPane alignment="CENTER" hgap="10.0" prefHeight="55.0" prefWidth="804.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+                                                        <columnConstraints>
+                                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="110.0" minWidth="110.0" prefWidth="110.0" />
+                                                          <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="70.0" minWidth="70.0" prefWidth="70.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.0" minWidth="95.0" prefWidth="95.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="50.0" minWidth="50.0" prefWidth="50.0" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="351.00006103515625" minWidth="10.0" prefWidth="71.33331298828125" />
+                                                            <ColumnConstraints hgrow="SOMETIMES" maxWidth="351.00006103515625" minWidth="10.0" prefWidth="236.66668701171875" />
+                                                        </columnConstraints>
+                                                        <rowConstraints>
+                                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                        </rowConstraints>
+                                                         <children>
+                                                            <CheckBox fx:id="cbCampfireCooking" mnemonicParsing="false" onAction="#onFilterChange" prefHeight="18.0" prefWidth="119.0" selected="true" text="Camp. Cooking:" />
+                                                            <CheckBox fx:id="cbMilling" mnemonicParsing="false" onAction="#onFilterChange" text="Milling:" GridPane.rowIndex="1" />
+                                                            <CheckBox fx:id="cbCooking" mnemonicParsing="false" onAction="#onFilterChange" selected="true" text="Cooking:" GridPane.columnIndex="2" />
+                                                            <CheckBox fx:id="cbAdvCooking" mnemonicParsing="false" onAction="#onFilterChange" selected="true" text="Adv. Cooking:" GridPane.columnIndex="4" />
+                                                            <CheckBox fx:id="cbBaking" mnemonicParsing="false" onAction="#onFilterChange" selected="true" text="Baking:" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                                                            <CheckBox fx:id="cbAdvBaking" mnemonicParsing="false" onAction="#onFilterChange" selected="true" text="Adv. Baking:" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                                                            <Spinner fx:id="spCampfireCooking" editable="true" GridPane.columnIndex="1" />
+                                                            <Spinner fx:id="spMilling" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                            <Spinner fx:id="spCooking" GridPane.columnIndex="3" />
+                                                            <Spinner fx:id="spAdvCooking" GridPane.columnIndex="5" />
+                                                            <Spinner fx:id="spBaking" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                                                            <Spinner fx:id="spAdvBaking" GridPane.columnIndex="5" GridPane.rowIndex="1" />
+                                                            <CheckBox fx:id="cbRaw" mnemonicParsing="false" onAction="#onFilterChange" text="Raw" GridPane.columnIndex="6" />
+                                                            <CheckBox fx:id="cbCharred" mnemonicParsing="false" onAction="#onFilterChange" text="Charred" GridPane.columnIndex="6" GridPane.rowIndex="1" />
+                                                            <CheckBox fx:id="cbHidden" mnemonicParsing="false" onAction="#onFilterChange" text="Hidden" GridPane.columnIndex="7" />
+                                                            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="7" GridPane.rowIndex="1">
+                                                               <children>
+                                                                  <Label text="Tasted:" />
+                                                                  <RadioButton fx:id="rbTastedYes" mnemonicParsing="false" onAction="#onFilterChange" text="Yes">
+                                                                     <toggleGroup>
+                                                                        <ToggleGroup fx:id="rbtgTasted" />
+                                                                     </toggleGroup>
+                                                                  </RadioButton>
+                                                                  <RadioButton fx:id="rbTastedNo" mnemonicParsing="false" onAction="#onFilterChange" text="No" toggleGroup="$rbtgTasted" />
+                                                                  <RadioButton fx:id="rbTastedBoth" mnemonicParsing="false" onAction="#onFilterChange" selected="true" text="Both" toggleGroup="$rbtgTasted" />
+                                                               </children>
+                                                               <GridPane.margin>
+                                                                  <Insets />
+                                                               </GridPane.margin>
+                                                               <opaqueInsets>
+                                                                  <Insets />
+                                                               </opaqueInsets>
+                                                            </HBox>
+                                                         </children>
+                                                         <padding>
+                                                            <Insets left="5.0" right="5.0" />
+                                                         </padding>
+                                                      </GridPane>
+                                                   </children>
+                                                </AnchorPane>
+                                          </content>
+                                        </Tab>
+                                        <Tab text="Meals">
+                                          <content>
+                                            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                                   <children>
+                                                      <TableView fx:id="mealListTable" layoutX="49.0" layoutY="36.0" onMousePressed="#onPressMealList" prefHeight="304.0" prefWidth="753.3333333333334" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                        <columns>
+                                                            <TableColumn fx:id="colCountMealList" editable="false" prefWidth="50.0" resizable="false" style="-fx-alignment: center;" text="Count" />
+                                                          <TableColumn fx:id="colNameMealList" editable="false" prefWidth="140.0" resizable="false" style="-fx-background-color: lightgrey; -fx-alignment: center-left;" text="Name" />
+                                                          <TableColumn fx:id="colSkillPointsMealList" editable="false" prefWidth="50.0" resizable="false" style="-fx-font-weight: bold; -fx-text-fill: darkred; -fx-alignment: center; -fx-text-overrun: clip;" text="SkillPts" />
+                                                            <TableColumn fx:id="colBalanceMultiplierMealList" editable="false" prefWidth="50.0" resizable="false" style="-fx-alignment: center; -fx-text-overrun: clip;" text="BalMult" />
+                                                            <TableColumn fx:id="colSurvivalSkillLvlMealList" editable="false" prefWidth="50.0" resizable="false" style="-fx-alignment: center;" text="SurvLvl" />
+                                                            <TableColumn fx:id="colSkillsMealList" editable="false" prefWidth="120.0" resizable="false" sortable="false" style="-fx-background-color: lightgrey; -fx-alignment: center-left;" text="Skills" />
+                                                            <TableColumn fx:id="colToolsMealList" editable="false" prefWidth="110.0" resizable="false" sortable="false" text="Tools" />
+                                                            <TableColumn fx:id="colIngredientsMealList" editable="false" prefWidth="200.0" resizable="false" sortable="false" style="-fx-background-color: lightgrey; -fx-alignment: center-left;" text="Ingredients" />
+                                                        </columns>
+                                                         <opaqueInsets>
+                                                            <Insets />
+                                                         </opaqueInsets>
+                                                      </TableView>
+                                                   </children>
+                                                </AnchorPane>
+                                          </content>
+                                        </Tab>
+                                      </tabs>
+                                    </TabPane>
+                                 </children>
+                              </AnchorPane>
+                            <AnchorPane minHeight="200.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0" SplitPane.resizableWithParent="false">
+                                 <children>
+                                    <SplitPane dividerPositions="0.2281795511221945" layoutX="63.0" layoutY="11.0" maxHeight="170.0" maxWidth="200.0" minHeight="200.0" prefHeight="240.0" prefWidth="804.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                      <items>
+                                        <AnchorPane maxHeight="170.0" maxWidth="170.0" minHeight="170.0" minWidth="170.0" prefHeight="170.0" prefWidth="170.0" SplitPane.resizableWithParent="false">
+                                             <children>
+                                                <PieChart fx:id="pieNutrients" labelsVisible="false" layoutX="-197.0" layoutY="-158.0" legendVisible="false" maxHeight="170.0" maxWidth="170.0" minHeight="170.0" minWidth="170.0" prefHeight="170.0" prefWidth="170.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+                                             <children>
+                                                <SplitPane dividerPositions="0.6298076923076923" layoutX="131.0" layoutY="11.0" prefHeight="182.0" prefWidth="616.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                  <items>
+                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" style="-fx-background-color: darkgrey;">
+                                                         <children>
+                                                            <TableView fx:id="mealTable" focusTraversable="false" layoutX="24.0" layoutY="-48.0" onMousePressed="#onPressMeal" onMouseReleased="#onReleaseMeal" prefHeight="160.0" prefWidth="387.0" AnchorPane.bottomAnchor="41.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                               <columns>
+                                                                  <TableColumn fx:id="colCountMeal" editable="false" prefWidth="30.0" text="Ct." />
+                                                                  <TableColumn fx:id="colNameMeal" editable="false" prefWidth="115.0" resizable="false" style="-fx-background-color: lightgrey;" text="Name" />
+                                                                  <TableColumn fx:id="colCaloriesMeal" editable="false" prefWidth="50.0" resizable="false" style="-fx-background-color: lightblue; -fx-alignment: center;" text="Calories" />
+                                                                  <TableColumn fx:id="colCarbsMeal" editable="false" prefWidth="30.0" resizable="false" style="-fx-background-color: red; -fx-alignment: center;" text="C" />
+                                                                  <TableColumn fx:id="colProteinsMeal" editable="false" prefWidth="30.0" resizable="false" style="-fx-background-color: orange; -fx-alignment: center;" text="P" />
+                                                                  <TableColumn fx:id="colFatsMeal" editable="false" prefWidth="30.0" resizable="false" style="-fx-background-color: yellow; -fx-alignment: center;" text="F" />
+                                                                  <TableColumn fx:id="colVitaminsMeal" editable="false" prefWidth="30.0" resizable="false" style="-fx-background-color: green; -fx-alignment: center;" text="V" />
+                                                                  <TableColumn fx:id="colNutrientsMeal" editable="false" prefWidth="60.0" resizable="false" style="-fx-font-weight: bold; -fx-text-fill: darkred;" text="Nutrients" />
+                                                               </columns>
+                                                            </TableView>
+                                                            <GridPane layoutX="10.0" layoutY="165.0" AnchorPane.bottomAnchor="12.0" AnchorPane.leftAnchor="3.0">
+                                                              <columnConstraints>
+                                                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="50.0" />
+                                                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="70.0" />
+                                                                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.33331298828125" minWidth="10.0" prefWidth="25.0" />
+                                                                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="174.66668701171875" minWidth="10.0" prefWidth="45.0" />
+                                                                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="239.33334350585938" minWidth="10.0" prefWidth="30.0" />
+                                                                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />
+                                                                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />
+                                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="30.0" />
+                                                                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="45.0" />
+                                                              </columnConstraints>
+                                                              <rowConstraints>
+                                                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                                              </rowConstraints>
+                                                               <children>
+                                                                  <Label text="Totals">
+                                                                     <font>
+                                                                        <Font name="Arial Black" size="12.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label text="Survival Skill:" GridPane.columnIndex="1">
+                                                                     <GridPane.margin>
+                                                                        <Insets />
+                                                                     </GridPane.margin>
+                                                                  </Label>
+                                                                  <Label fx:id="labelSurvivalSkillLvl" text="Lvl" GridPane.columnIndex="2" />
+                                                                  <Label fx:id="labelCalories" style="-fx-text-fill: lightblue; -fx-font-weight: bold;" text="Cal" textOverrun="CLIP" GridPane.columnIndex="3">
+                                                                     <font>
+                                                                        <Font size="11.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label fx:id="labelCarbs" style="-fx-text-fill: red; -fx-font-weight: bold;" text="0.00" textOverrun="CLIP" GridPane.columnIndex="4">
+                                                                     <font>
+                                                                        <Font size="11.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label fx:id="labelProteins" style="-fx-text-fill: orange; -fx-font-weight: bold;" text="0.00" textOverrun="CLIP" GridPane.columnIndex="5">
+                                                                     <font>
+                                                                        <Font size="11.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label fx:id="labelFats" style="-fx-text-fill: gold; -fx-font-weight: bold;" text="0.00" textOverrun="CLIP" GridPane.columnIndex="6">
+                                                                     <font>
+                                                                        <Font size="11.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label fx:id="labelVitamins" style="-fx-text-fill: green; -fx-font-weight: bold;" text="0.00" textOverrun="CLIP" GridPane.columnIndex="7">
+                                                                     <font>
+                                                                        <Font size="11.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label fx:id="labelNutrients" style="-fx-text-fill: darkred; -fx-font-weight: bold;" text="0.00" textOverrun="CLIP" GridPane.columnIndex="8">
+                                                                     <font>
+                                                                        <Font size="11.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                               </children>
+                                                            </GridPane>
+                                                         </children>
+                                                      </AnchorPane>
+                                                    <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="175.0" SplitPane.resizableWithParent="false">
+                                                         <children>
+                                                            <HBox layoutX="5.0" layoutY="169.0">
+                                                               <children>
+                                                                  <Button fx:id="buttonResetDelete" mnemonicParsing="false" onAction="#onButtonResetDelete" prefWidth="55.0" text="Reset" />
+                                                                  <Button fx:id="buttonSearch" mnemonicParsing="false" onAction="#onButtonSearch" prefWidth="55.0" text="Search" />
+                                                                  <Button fx:id="buttonCreateEdit" mnemonicParsing="false" onAction="#onButtonCreateEdit" prefWidth="55.0" text="Create" />
+                                                               </children>
+                                                            </HBox>
+                                                            <GridPane layoutX="15.0" layoutY="4.0" prefHeight="159.0" prefWidth="150.0">
+                                                              <columnConstraints>
+                                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="95.333251953125" minWidth="10.0" prefWidth="76.6666259765625" />
+                                                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="80.6666259765625" minWidth="10.0" prefWidth="73.3333740234375" />
+                                                              </columnConstraints>
+                                                              <rowConstraints>
+                                                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                                              </rowConstraints>
+                                                               <children>
+                                                                  <Label text="Base Gain" />
+                                                                  <TextField fx:id="textBaseGain" prefHeight="25.0" prefWidth="55.0" text="12" GridPane.columnIndex="1" />
+                                                                  <Label text="Base Multipl." GridPane.rowIndex="1" />
+                                                                  <TextField fx:id="textSkillMultiplier" prefHeight="25.0" prefWidth="53.0" text="5" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                                                                  <Label text="Balance" GridPane.rowIndex="2">
+                                                                     <font>
+                                                                        <Font name="Arial Black" size="12.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label fx:id="labelBalanceMultiplier" text="0" textOverrun="CLIP" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                                     <font>
+                                                                        <Font name="Arial Black" size="12.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label text="Skill Points" GridPane.rowIndex="5">
+                                                                     <font>
+                                                                        <Font name="Arial Black" size="12.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label fx:id="labelSkillPoints" text="60" textFill="#a21a1a" textOverrun="CLIP" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                                     <font>
+                                                                        <Font name="Arial Black" size="16.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label text="Tastiness" GridPane.rowIndex="3">
+                                                                     <font>
+                                                                        <Font name="Arial Black" size="12.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label text="Variety" GridPane.rowIndex="4">
+                                                                     <font>
+                                                                        <Font name="Arial Black" size="12.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label fx:id="labelTastiness" text="0" textOverrun="CLIP" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                                     <font>
+                                                                        <Font name="Arial Black" size="12.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                                  <Label fx:id="labelVariety" text="0" textOverrun="CLIP" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                                     <font>
+                                                                        <Font name="Arial Black" size="12.0" />
+                                                                     </font>
+                                                                  </Label>
+                                                               </children>
+                                                            </GridPane>
+                                                         </children>
+                                                      </AnchorPane>
+                                                  </items>
+                                                </SplitPane>
+                                             </children>
+                                          </AnchorPane>
+                                      </items>
+                                    </SplitPane>
+                                 </children>
+                              </AnchorPane>
+                          </items>
+                        </SplitPane>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab disable="true" text="Housing">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+          <Tab disable="true" text="Farming">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+            <Tab disable="true" text="Prices">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</AnchorPane>
