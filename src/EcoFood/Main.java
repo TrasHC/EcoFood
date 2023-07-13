@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -23,6 +24,7 @@ public class Main extends Application {
 
         //scene.getStylesheets().add("foodrecipestyle.css");
         primaryStage.setTitle("Eco Food");
+        primaryStage.getIcons().add(new Image(Main.class.getResourceAsStream("icon.png")));
         primaryStage.setOnCloseRequest(e -> {
             e.consume();
 //            int result = ConformationDialogue.display();

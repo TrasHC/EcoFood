@@ -268,10 +268,29 @@ public class FoodRecipe implements Serializable {
         fats = new SimpleDoubleProperty(s.readDouble());
         vitamins = new SimpleDoubleProperty(s.readDouble());
         nutrients = new SimpleDoubleProperty(s.readDouble());
-        skill = new SimpleStringProperty((String)s.readObject());
+        skill = new SimpleStringProperty((String) s.readObject());
         skillLvl = new SimpleIntegerProperty(s.readInt());
-        craftStation = new SimpleStringProperty((String)s.readObject());
+        craftStation = new SimpleStringProperty((String) s.readObject());
         tastiness = new SimpleDoubleProperty(s.readDouble());
         this.emulationSource = null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        FoodRecipe temp = (FoodRecipe) o;
+        // don't check emulation source (?) and count (!)
+        boolean bEqual = getName().equals(temp.getName());
+        bEqual = bEqual && getTastiness() == temp.getTastiness();
+        bEqual = bEqual && getCalories() == temp.getCalories();
+        bEqual = bEqual && getCarbs() == temp.getCarbs();
+        bEqual = bEqual && getFats() == temp.getFats();
+        bEqual = bEqual && getProteins() == temp.getProteins();
+        bEqual = bEqual && getNutrients() == temp.getNutrients();
+        bEqual = bEqual && getCraftStation().equals(temp.getCraftStation());
+        bEqual = bEqual && getSkill().equals(temp.getSkill());
+        bEqual = bEqual && getSkillLvl() == temp.getSkillLvl();
+        return bEqual;
     }
 }

@@ -12,8 +12,9 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="EcoFood.MealGeneratorController">
+<AnchorPane xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="EcoFood.MealGeneratorController">
    <children>
       <TableView fx:id="tableMealList" layoutX="2.0" onMousePressed="#onPressMealList" prefHeight="304.0" prefWidth="770.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="50.0">
          <columns>
@@ -30,22 +31,28 @@
             <Insets />
          </opaqueInsets>
       </TableView>
-      <HBox alignment="CENTER_LEFT" layoutX="7.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="720.0" spacing="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox alignment="CENTER_LEFT" layoutX="7.0" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="50.0" prefWidth="770.0" spacing="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label text="# food Items:" />
-            <TextField fx:id="textNumRecipes" editable="false" prefHeight="25.0" prefWidth="30.0" />
-            <Label text="# food Items/meal:" />
+            <Label disable="true" text="# food Items:" />
+            <TextField fx:id="textNumRecipes" disable="true" editable="false" prefHeight="25.0" prefWidth="30.0" />
+            <Label text="# food Items/meal (max. 20):">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font></Label>
             <TextField fx:id="textNumItemsPerMeal" prefHeight="25.0" prefWidth="30.0" />
-            <Label text="# meals to calculate:" />
-            <TextField fx:id="textNumCalculations" editable="false" prefHeight="25.0" prefWidth="150.0" />
+            <Label disable="true" text="# meals to calculate:" />
+            <TextField fx:id="textNumCalculations" disable="true" editable="false" prefHeight="25.0" prefWidth="150.0" />
+            <Label disable="true" text="Threads:" />
+            <TextField disable="true" prefHeight="25.0" prefWidth="29.0" text="1" />
          </children>
          <padding>
             <Insets left="20.0" />
          </padding>
       </HBox>
-      <GridPane layoutX="520.0" layoutY="374.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="0.0">
+      <GridPane layoutX="520.0" layoutY="374.0" prefHeight="30.0" prefWidth="345.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="0.0">
         <columnConstraints>
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
           <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
@@ -53,11 +60,12 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="buttonGenerate" mnemonicParsing="false" onAction="#onButtonGenerate" prefHeight="25.0" prefWidth="65.0" text="Generate" GridPane.columnIndex="1" />
+            <Button fx:id="buttonGenerate" mnemonicParsing="false" onAction="#onButtonGenerate" prefWidth="65.0" text="Generate" GridPane.columnIndex="2" />
             <Button fx:id="buttonClose" mnemonicParsing="false" onAction="#onButtonClose" prefWidth="65.0" text="Close" />
-            <Button fx:id="buttonSave" mnemonicParsing="false" onAction="#onButtonSave" prefWidth="65.0" text="Save" GridPane.columnIndex="2" />
+            <Button fx:id="buttonSave" disable="true" mnemonicParsing="false" onAction="#onButtonSave" prefWidth="65.0" text="Save" GridPane.columnIndex="3" />
+            <Button fx:id="buttonRefine" disable="true" mnemonicParsing="false" onAction="#onButtonRefine" prefWidth="65.0" text="Refine" GridPane.columnIndex="1" />
          </children>
       </GridPane>
-      <ProgressBar fx:id="progressGenerate" layoutX="14.0" layoutY="364.0" prefHeight="18.0" prefWidth="429.0" progress="0.0" visible="false" />
+      <ProgressBar fx:id="progressGenerate" layoutX="14.0" layoutY="364.0" prefHeight="18.0" prefWidth="395.0" progress="0.0" visible="false" />
    </children>
 </AnchorPane>

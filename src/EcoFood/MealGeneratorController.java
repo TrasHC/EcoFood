@@ -1,25 +1,19 @@
 package EcoFood;
 
-import com.sun.javafx.tk.Toolkit;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.BooleanBinding;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
-import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.UnaryOperator;
 
@@ -41,6 +35,7 @@ public class MealGeneratorController implements Initializable {
 
     public Button buttonSave;
     public Button buttonGenerate;
+    public Button buttonRefine;
     public Button buttonClose;
 
     public ProgressBar progressGenerate;
@@ -92,7 +87,7 @@ public class MealGeneratorController implements Initializable {
         mealsSortedList = new SortedList<>(meals.filtered(p -> true));
         mealsSortedList.comparatorProperty().bind(tableMealList.comparatorProperty());
         tableMealList.setItems(mealsSortedList);
-        tableMealList.setPlaceholder(new Label("Generate meals from the previously selected food items\n(all items with count>0))"));
+        tableMealList.setPlaceholder(new Label("Generate meals from the previously selected food items\n(all items with count>0)"));
         colSkillPointsMealList.setSortType(TableColumn.SortType.DESCENDING);
         tableMealList.getSortOrder().addAll(colSkillPointsMealList);
 
@@ -112,7 +107,10 @@ public class MealGeneratorController implements Initializable {
 
         UnaryOperator<TextFormatter.Change> filter = change -> {
             if (change.getText().isBlank()) return change;
-            if (change.getText().matches("[0-9]*")) return change;
+            if (change.getText().matches("[0-9]*") && Integer.parseInt(change.getControlNewText()) <= 20) {
+                //System.out.println(change.getControlNewText());
+                return change;
+            }
             return null;
         };
         textNumItemsPerMeal.setTextFormatter(new TextFormatter<String>(filter));
@@ -146,7 +144,7 @@ public class MealGeneratorController implements Initializable {
     public void cancelTask() {
         if (task!=null && task.isRunning())
             task.cancel();
-        System.out.println("Task cancelled");
+        System.out.println("Cancelling task");
     }
 
     public void onButtonGenerate() {
@@ -163,6 +161,7 @@ public class MealGeneratorController implements Initializable {
         buttonGenerate.setDisable(true);
         buttonClose.setText("Cancel");
         buttonSave.setDisable(true);
+        buttonRefine.setDisable(true);
         if (task != null && task.isRunning())
             task.cancel();
 
@@ -171,9 +170,9 @@ public class MealGeneratorController implements Initializable {
         progressGenerate.setVisible(true);
         task.messageProperty().addListener((obs,oldValue,newValue) -> {
             if (newValue.equals("Done!")) {
-
+                System.out.println("Generation task done!");
             } else if (newValue.equals("Cancelled!")) {
-
+                System.out.println("Generation task cancelled!");
             } else if (newValue.equals("Failed!")) {
                 System.out.println("Generation task failed!");
             }
@@ -183,7 +182,6 @@ public class MealGeneratorController implements Initializable {
             progressGenerate.setVisible(false);
             buttonGenerate.setDisable(false);
             buttonClose.setText("Close");
-            buttonSave.setDisable(false);
         });
 
         Thread th = new Thread(task);
@@ -212,58 +210,95 @@ public class MealGeneratorController implements Initializable {
 //        }
 //        progressGenerate.setVisible(false);
     }
-    private void combinationRepetition(int[] chosen, int index, int r, int start, int end)
-    {
-        if (index == r) {
-            ObservableList<FoodRecipe> recipes = FXCollections.observableArrayList();
-            StringBuilder name = new StringBuilder("Meal");
-            for (int i = 0; i <= end; i++) {
-                name.append(chosen[i]);
-                if (chosen[i]>0) {
-                FoodRecipe recipe = new FoodRecipe(this.recipes.get(i));
-                recipe.setCount(chosen[i]);
-                recipes.add(recipe);
-                }
-            }
-            //System.out.println(name);
-            // TODO user input
-            int maxMeals = 10;
-            Meal meal = new Meal();
-            meal.setName(name.toString());
-            meal.setRecipes(recipes);
-            meal.updateSkillPoints((int) parent.getBaseGain(),parent.getSkillMultiplier(),0,0);
-            if(meal.getBalanceMultiplier() > 0.49f) {
-                //System.out.println(name.toString());
-                balancedMeals.add(meal);
-            }
-            if (mealsSortedList.size()<maxMeals) {
-                meals.add(meal);
-                //System.out.println("add: " + meal.getSkillPoints());
-            }
-            else if(meal.getSkillPoints() > mealsSortedList.get(maxMeals-1).getSkillPoints()){
-                //System.out.println(mealsSortedList.get(maxMeals-1).getSkillPoints() + " -> " + meal.getSkillPoints());
-                meals.removeAll(mealsSortedList.get(maxMeals-1));
-                meals.add(meal);
-            }
 
-            progressCounter++;
-            if (progressCounter%10000 == 0) {
-                int numCalculations = Integer.parseInt(textNumCalculations.getText());
-                progressGenerate.setProgress((double)progressCounter / (double)numCalculations);
-            }
-            //else System.out.println("discard: " + meal.getSkillPoints());
-            return;
-        }
-        for (int i = start; i <= end; i++) {
-            chosen[i]++;
-            combinationRepetition(chosen, index + 1, r, i, end);
-            chosen[i]--;
-        }
+    public void onButtonRefine() {
+        Meal mealToRefine = tableMealList.getSelectionModel().getSelectedItem();
+        if (mealToRefine == null) return;
+
+        FoodRecipe recipeMeal = new FoodRecipe();
+        recipeMeal.setCount(mealToRefine.getCount());
+        recipeMeal.setName("RefinedMeal");
+        recipeMeal.setCalories(mealToRefine.getTotalCalories());
+        recipeMeal.setTastiness(mealToRefine.getTastinessMultiplier());
+        recipeMeal.setCarbs(mealToRefine.getTotalCarbs());
+        recipeMeal.setFats(mealToRefine.getTotalFats());
+        recipeMeal.setProteins(mealToRefine.getTotalProteins());
+        recipeMeal.setVitamins(mealToRefine.getTotalVitamins());
+        recipeMeal.calcNutrients();
+        recipeMeal.setEmulationSource(mealToRefine);
+        System.out.println(recipes.size());
+        recipes.add(recipeMeal);
+        System.out.println(recipes.size());
+
+        onButtonGenerate();
+
+        //if(!recipes.remove(recipeMeal)) System.out.println("Failed to remove emulated meal");
+        //System.out.println(recipes.size());
     }
 
+    /*    private void combinationRepetition(int[] chosen, int index, int r, int start, int end)
+        {
+            if (index == r) {
+                ObservableList<FoodRecipe> recipes = FXCollections.observableArrayList();
+                StringBuilder name = new StringBuilder("Meal");
+                for (int i = 0; i <= end; i++) {
+                    name.append(chosen[i]);
+                    if (chosen[i]>0) {
+                    FoodRecipe recipe = new FoodRecipe(this.recipes.get(i));
+                    recipe.setCount(chosen[i]);
+                    recipes.add(recipe);
+                    }
+                }
+                //System.out.println(name);
+                int maxMeals = 10;
+                Meal meal = new Meal();
+                meal.setName(name.toString());
+                meal.setRecipes(recipes);
+                meal.updateSkillPoints((int) parent.getBaseGain(),parent.getSkillMultiplier(),0,0);
+                if(meal.getBalanceMultiplier() > 0.49f) {
+                    //System.out.println(name.toString());
+                    balancedMeals.add(meal);
+                }
+                if (mealsSortedList.size()<maxMeals) {
+                    meals.add(meal);
+                    //System.out.println("add: " + meal.getSkillPoints());
+                }
+                else if(meal.getSkillPoints() > mealsSortedList.get(maxMeals-1).getSkillPoints()){
+                    //System.out.println(mealsSortedList.get(maxMeals-1).getSkillPoints() + " -> " + meal.getSkillPoints());
+                    meals.removeAll(mealsSortedList.get(maxMeals-1));
+                    meals.add(meal);
+                }
+
+                progressCounter++;
+                if (progressCounter%10000 == 0) {
+                    int numCalculations = Integer.parseInt(textNumCalculations.getText());
+                    progressGenerate.setProgress((double)progressCounter / (double)numCalculations);
+                }
+                //else System.out.println("discard: " + meal.getSkillPoints());
+                return;
+            }
+            for (int i = start; i <= end; i++) {
+                chosen[i]++;
+                combinationRepetition(chosen, index + 1, r, i, end);
+                chosen[i]--;
+            }
+        }
+    */
     public void onButtonSave() {
         Meal meal= tableMealList.getSelectionModel().getSelectedItem();
         if (meal != null) {
+            String mealName;
+            TextInputDialog dialog = new TextInputDialog(meal.getName());
+            dialog.setTitle("Enter Meal Name");
+            dialog.setHeaderText(null);
+            dialog.setContentText("Name:");
+            Optional<String> result = dialog.showAndWait();
+            if (result.isPresent()) {
+                mealName = result.get();
+            } else {
+                return;
+            }
+            meal.setName(mealName);
             meal.setCount(1);
             tableMealList.refresh();
             parent.addMeal(meal);
@@ -271,6 +306,15 @@ public class MealGeneratorController implements Initializable {
     }
 
     public void onPressMealList() {
+        if (task != null && task.isRunning()) return;
+        Meal meal = tableMealList.getSelectionModel().getSelectedItem();
+        if (meal != null) {
+            buttonRefine.setDisable(false);
+            buttonSave.setDisable(false);
+        } else {
+            buttonRefine.setDisable(true);
+            buttonSave.setDisable(true);
+        }
 
     }
 

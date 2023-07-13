@@ -1,6 +1,7 @@
 package EcoFood;
 
-// TODO: add best, varitizer & balancer, charred filter, threads
+// TODO: diversified & balancer , threads, save base x
+// BUG: import,add 30 best, generate 6, refine best 6 -> skips meals
 
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -19,6 +20,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.*;
 
 import javax.swing.*;
@@ -109,6 +111,8 @@ public class EcoFoodController implements Initializable {
     public RadioButton rbTastedBoth = null;
     public ToggleGroup rbtgTasted = null;
 
+    public MenuItem miAddBest = null;
+
     public PieChart pieNutrients = null;
 
     private ObservableList<FoodRecipe> recipeList = FXCollections.observableArrayList(recipe -> new Observable[]{recipe.countProperty()});
@@ -118,8 +122,8 @@ public class EcoFoodController implements Initializable {
     private FilteredList<FoodRecipe> recipeFilteredList = null;
     private FilteredList<FoodRecipe> mealFilteredList = null;
     //private FilteredList<Meal> mealListFilteredList = null;
+    private SortedList<FoodRecipe> recipeSortedList = null;
     private SortedList<Meal> mealListSortedList = null;
-    private String ecoPath = null;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -127,7 +131,6 @@ public class EcoFoodController implements Initializable {
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
         colCalories.setCellValueFactory(new PropertyValueFactory<>("calories"));
 //        colCarbs.setCellValueFactory(new PropertyValueFactory<>("carbs"));
-        // TODO
         colCarbs.setCellValueFactory(param -> Bindings.createObjectBinding(()-> {
             double carbs = param.getValue().getCarbs();
             int calories = param.getValue().getCalories();
@@ -135,7 +138,7 @@ public class EcoFoodController implements Initializable {
             double totalMeanCarbs = Double.parseDouble(labelCarbs.getText().replace(',','.'));
             int totalCalories = Integer.parseInt(labelCalories.getText());
             double score = (carbs - totalMeanCarbs) /(1+((double)totalCalories/(double)calories));
-            return String.valueOf(carbs)+ "\n(" + (score<0? "" : "+") + String.format("%.1f",score) + ")";
+            return carbs + "\n(" + (score < 0 ? "" : "+") + String.format("%.1f", score) + ")";
             } ,param.getValue().carbsProperty(), param.getValue().caloriesProperty(),labelCarbs.textProperty(),labelCalories.textProperty()));
         colProteins.setCellValueFactory(param -> Bindings.createObjectBinding(()-> {
             double proteins = param.getValue().getProteins();
@@ -144,7 +147,7 @@ public class EcoFoodController implements Initializable {
             double totalMeanProteins = Double.parseDouble(labelProteins.getText().replace(',','.'));
             int totalCalories = Integer.parseInt(labelCalories.getText());
             double score = (proteins - totalMeanProteins) /(1+((double)totalCalories/(double)calories));
-            return String.valueOf(proteins)+ "\n(" + (score<0? "" : "+") + String.format("%.1f",score) + ")";
+            return proteins + "\n(" + (score < 0 ? "" : "+") + String.format("%.1f", score) + ")";
         } ,param.getValue().proteinsProperty(), param.getValue().caloriesProperty(),labelProteins.textProperty(),labelCalories.textProperty()));
         colFats.setCellValueFactory(param -> Bindings.createObjectBinding(()-> {
             double fats = param.getValue().getFats();
@@ -153,7 +156,7 @@ public class EcoFoodController implements Initializable {
             double totalMeanFats = Double.parseDouble(labelFats.getText().replace(',','.'));
             int totalCalories = Integer.parseInt(labelCalories.getText());
             double score = (fats - totalMeanFats) /(1+((double)totalCalories/(double)calories));
-            return String.valueOf(fats)+ "\n(" + (score<0? "" : "+") + String.format("%.1f",score) + ")";
+            return fats + "\n(" + (score < 0 ? "" : "+") + String.format("%.1f", score) + ")";
         } ,param.getValue().fatsProperty(), param.getValue().caloriesProperty(),labelFats.textProperty(),labelCalories.textProperty()));
         colVitamins.setCellValueFactory(param -> Bindings.createObjectBinding(()-> {
             double vitamins = param.getValue().getVitamins();
@@ -162,7 +165,7 @@ public class EcoFoodController implements Initializable {
             double totalMeanVitamins = Double.parseDouble(labelVitamins.getText().replace(',','.'));
             int totalCalories = Integer.parseInt(labelCalories.getText());
             double score = (vitamins - totalMeanVitamins) /(1+((double)totalCalories/(double)calories));
-            return String.valueOf(vitamins) + "\n(" + (score<0? "" : "+") + String.format("%.1f",score) + ")";
+            return vitamins + "\n(" + (score < 0 ? "" : "+") + String.format("%.1f", score) + ")";
         } ,param.getValue().vitaminsProperty(), param.getValue().caloriesProperty(),labelVitamins.textProperty(),labelCalories.textProperty()));
         colNutrients.setCellValueFactory(param -> Bindings.createObjectBinding(()-> {
             double carbs  = param.getValue().getCarbs();
@@ -171,7 +174,7 @@ public class EcoFoodController implements Initializable {
             double vitamins = param.getValue().getVitamins();
             int calories = param.getValue().getCalories();
             if (calories == 0) return String.valueOf(carbs+fats+proteins+vitamins);
-            double totalMeanCarbs = Double.parseDouble(labelCarbs.getText().replace(',','.'));
+            /*double totalMeanCarbs = Double.parseDouble(labelCarbs.getText().replace(',','.'));
             double totalMeanFats = Double.parseDouble(labelFats.getText().replace(',','.'));
             double totalMeanProteins = Double.parseDouble(labelProteins.getText().replace(',','.'));
             double totalMeanVitamins = Double.parseDouble(labelVitamins.getText().replace(',','.'));
@@ -182,7 +185,7 @@ public class EcoFoodController implements Initializable {
             double newVitamins = (vitamins*calories + totalMeanVitamins*totalCalories) / (double)(calories+totalCalories);
             double maxNutrient = Math.max(newCarbs,Math.max(newFats, Math.max(newProteins, newVitamins)));
             double minNutrient = Math.min(newCarbs,Math.min(newFats, Math.min(newProteins, newVitamins)));
-            double score = 100*(-0.5f + (minNutrient/maxNutrient));
+            double score = 100*(-0.5f + (minNutrient/maxNutrient)); */
             //System.out.println("Factored: "+ param.getValue().getName() + param.getValue().getTastiness()+String.format("%02.2f",(carbs + fats + proteins + vitamins)*(1+param.getValue().getTastiness()/100.0f)))
             DecimalFormat df = new DecimalFormat("00.00");
             return df.format((carbs + fats + proteins + vitamins)*(1+param.getValue().getTastiness()/100.0f)); // + "\n(" + (score>=100? "MAX":String.format("%.1f",score)) + ")";
@@ -193,7 +196,7 @@ public class EcoFoodController implements Initializable {
         colLvl.setCellValueFactory(new PropertyValueFactory<>("skillLvl"));
         colCraftStation.setCellValueFactory(new PropertyValueFactory<>("craftStation"));
         colTastiness.setCellValueFactory(new PropertyValueFactory<>("tastiness"));
-        colTastiness.setCellFactory(ComboBoxTableCell.forTableColumn(-30,-20,-10,0,10,20,30));
+        colTastiness.setCellFactory(ComboBoxTableCell.forTableColumn(-30, -20, -10, -1, 0, 10, 20, 30));
 
         colCountMeal.setCellValueFactory(new PropertyValueFactory<>("count"));
         colNameMeal.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -221,19 +224,23 @@ public class EcoFoodController implements Initializable {
         spAdvBaking.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 7, 7));
 
         recipeFilteredList = new FilteredList<>(recipeList, p -> true);
-        SortedList<FoodRecipe> recipeSortedList = new SortedList<>(recipeFilteredList);
+        recipeSortedList = new SortedList<>(recipeFilteredList);
         recipeSortedList.comparatorProperty().bind(recipeTable.comparatorProperty());
         recipeTable.setItems(recipeSortedList);
 
         Button buttonImport = new Button("Import Data");
-        buttonImport.setOnAction(e->onImportFromECO());
+        buttonImport.setOnAction(e -> onImportFromECO());
         //recipeTable.setPlaceholder(buttonImport);
         Button buttonLoad = new Button("Load Data");
-        buttonLoad.setOnAction(e->onLoad());
+        buttonLoad.setOnAction(e -> onLoad());
         HBox hBoxPH = new HBox(10);
         hBoxPH.setAlignment(Pos.CENTER);
-        hBoxPH.getChildren().addAll(buttonImport,buttonLoad);
-        recipeTable.setPlaceholder(hBoxPH);
+        hBoxPH.getChildren().addAll(buttonImport, buttonLoad);
+        Label labelPH = new Label("No food items to show (none loaded or none matching the selected filters).");
+        VBox vBoxPH = new VBox(10);
+        vBoxPH.setAlignment(Pos.CENTER);
+        vBoxPH.getChildren().addAll(hBoxPH, labelPH);
+        recipeTable.setPlaceholder(vBoxPH);
 
         colNutrients.setSortType(TableColumn.SortType.DESCENDING);
         recipeTable.getSortOrder().addAll(colNutrients);
@@ -242,7 +249,7 @@ public class EcoFoodController implements Initializable {
         SortedList<FoodRecipe> mealSortedList = new SortedList<>(mealFilteredList);
         mealSortedList.comparatorProperty().bind(mealTable.comparatorProperty());
         mealTable.setItems(mealSortedList);
-        mealTable.setPlaceholder(new Label("Click on table above to add items,\nclick on this table to remove them.\n Double click on Tastiness Column to set tastiness."));
+        mealTable.setPlaceholder(new Label("Click on table above to add items,\nclick on this table to remove them.\n Click three times on Tastiness Column to set tastiness."));
 
         //mealListFilteredList = mealList.filtered(meal -> meal.getCount() > 0);
         //SortedList<Meal> mealListSortedList = new SortedList<>(mealListFilteredList);
@@ -266,7 +273,7 @@ public class EcoFoodController implements Initializable {
 
         UnaryOperator<TextFormatter.Change> filter = change -> {
             if (change.getText().isBlank()) return change;
-            if (change.getText().matches("[0-9]*")) return change;
+            if (change.getText().matches("\\d*")) return change;
             return null;
         };
         textSkillMultiplier.setTextFormatter(new TextFormatter<String>(filter));
@@ -297,8 +304,8 @@ public class EcoFoodController implements Initializable {
             if (newTab.getText().equals("Meal Creator")){
                 buttonCreateEdit.setText("Create");
                 buttonResetDelete.setText("Reset");
+                miAddBest.setDisable(false);
                 mealTable.setItems(mealFilteredList);
-                // TODO: Hide vartiey TEXT label
                 labelVariety.setVisible(false);
                 updateMeal();
             }
@@ -306,6 +313,7 @@ public class EcoFoodController implements Initializable {
                 buttonCreateEdit.setText("Edit");
                 buttonResetDelete.setText("Delete");
                 labelVariety.setVisible(true);
+                miAddBest.setDisable(true);
                 updateDiet();
                 mealTable.setItems(emulatedMealListFilteredList);
             }
@@ -331,94 +339,127 @@ public class EcoFoodController implements Initializable {
             chooser.setInitialDirectory(defaultDirectory);
         File selectedDirectory = chooser.showDialog(recipeTable.getScene().getWindow());
         if (selectedDirectory == null) return;
-        ecoPath = selectedDirectory.getPath();
+        String ecoPath = selectedDirectory.getPath();
 
         File folder = new File(ecoPath + "/Eco_Data/Server/Mods/__core__/AutoGen/Food");
         File[] foodFiles = folder.listFiles();
         // add seeds
         folder = new File(ecoPath + "/Eco_Data/Server/Mods/__core__/AutoGen/Seed");
         File[] seedFiles = folder.listFiles();
+        folder = new File(ecoPath + "/Eco_Data/Server/Mods/__core__/AutoGen/Recipe");
+        File[] recipeFiles = folder.listFiles();
+        if (seedFiles == null || foodFiles == null) {
+            System.out.println("Couldn't find Eco files");
+            return;
+        }
         File[] listOfFiles = Arrays.copyOf(foodFiles, foodFiles.length + seedFiles.length);
         System.arraycopy(seedFiles, 0, listOfFiles, foodFiles.length, seedFiles.length);
-        if (listOfFiles == null)
-            System.out.println("Can't find recipe data");
-        else
-            for (File file : listOfFiles) {
-                if (file.isFile()) {
-                    FoodRecipe recipe = new FoodRecipe();
-                    try {
-                        Scanner in = new Scanner(new FileReader(file.getPath()));
+        for (File file : listOfFiles) {
+            if (file.isFile()) {
+                FoodRecipe recipe = new FoodRecipe();
+                try {
+                    Scanner in = new Scanner(new FileReader(file.getPath()));
 //                        read name
-                        in.findWithinHorizon("\\[\\s*LocDisplayName\\s*\\(\\s*\"(.+)\"\\s*\\)\\s*]", 0);
-                        MatchResult result = in.match();
-                        recipe.setName(result.group(1));
+                    in.findWithinHorizon("\\[\\s*LocDisplayName\\s*\\(\\s*\"(.+)\"\\s*\\)\\s*]", 0);
+                    MatchResult result = in.match();
+                    recipe.setName(result.group(1));
 
 //                        check for raw or hidden food
-                        boolean isRaw = (in.findWithinHorizon("\\[\\s*Tag\\s*\\(\\s*\"Crop\"", 0) != null);
-                        boolean isHidden = (in.findWithinHorizon("\\[\\s*Category\\s*\\(\\s*\"Hidden\"[\\s\\S]+partial\\s+class.+:\\s*(?:FoodItem|SeedItem)", 0) != null);
+                    boolean isRaw = (in.findWithinHorizon("\\[\\s*Tag\\s*\\(\\s*\"Crop\"", 0) != null);
+                    boolean isHidden = (in.findWithinHorizon("\\[\\s*Category\\s*\\(\\s*\"Hidden\"[\\s\\S]+partial\\s+class.+:\\s*(?:FoodItem|SeedItem)", 0) != null);
 
 //                        read calories
-                        if(in.findWithinHorizon("float\\s+Calories\\s*=>\\s*(\\d+)\\s*;", 0)==null) {
-                            System.out.println("Failed to parse calories: " + file.getName());
-                            continue;
-                        }
-                        result = in.match();
-                        recipe.setCalories(Integer.parseInt(result.group(1)));
+                    if (in.findWithinHorizon("float\\s+Calories\\s*=>\\s*(\\d+)\\s*;", 0) == null) {
+                        System.out.println("Failed to parse calories: " + file.getName());
+                        continue;
+                    }
+                    result = in.match();
+                    recipe.setCalories(Integer.parseInt(result.group(1)));
 
 //                        read nutrients
-                        if(in.findWithinHorizon("new\\s+Nutrients\\s*\\(\\)\\s*\\{\\s*Carbs\\s*=\\s*(\\d+)\\s*,\\s*Fat\\s*=\\s*(\\d+)\\s*,\\s*Protein\\s*=\\s*(\\d+)\\s*,\\s*Vitamins\\s*=\\s*(\\d+)\\s*}\\s*;", 0)==null) {
-                            System.out.println("Failed to parse nutrients: " + file.getName());
-                            continue;
-                        }
-                        result = in.match();
-                        recipe.setCarbs(Integer.parseInt(result.group(1)));
-                        recipe.setFats(Integer.parseInt(result.group(2)));
-                        recipe.setProteins(Integer.parseInt(result.group(3)));
-                        recipe.setVitamins(Integer.parseInt(result.group(4)));
-                        recipe.calcNutrients();
-                        if (recipe.getNutrients() == 0) {
-                            continue;
-                        }
+                    if (in.findWithinHorizon("new\\s+Nutrients\\s*\\(\\)\\s*\\{\\s*Carbs\\s*=\\s*(\\d+)\\s*,\\s*Fat\\s*=\\s*(\\d+)\\s*,\\s*Protein\\s*=\\s*(\\d+)\\s*,\\s*Vitamins\\s*=\\s*(\\d+)\\s*}\\s*;", 0) == null) {
+                        System.out.println("Failed to parse nutrients: " + file.getName());
+                        continue;
+                    }
+                    result = in.match();
+                    recipe.setCarbs(Integer.parseInt(result.group(1)));
+                    recipe.setFats(Integer.parseInt(result.group(2)));
+                    recipe.setProteins(Integer.parseInt(result.group(3)));
+                    recipe.setVitamins(Integer.parseInt(result.group(4)));
+                    recipe.calcNutrients();
+                    if (recipe.getNutrients() == 0) {
+                        continue;
+                    }
 
 //                        read skill and crafting station
-                        if (isRaw) {
-                            recipe.setSkill("Gathering");
-                            recipe.setSkillLvl(0);
-                            recipe.setCraftStation("Raw Food");
-                        }
-                        else if (isHidden) {
-                            recipe.setSkill("Hidden");
-                            recipe.setSkillLvl(0);
-                            recipe.setCraftStation("None");
-                        } else try {
-                            in.findWithinHorizon("\\[\\s*RequiresSkill\\s*\\(\\s*typeof\\s*\\(\\s*(\\w+)\\s*\\)\\s*,\\s*(\\d+)\\s*\\)\\s*]", 0);
-                            result = in.match();
-                            recipe.setSkill(result.group(1).replaceAll("Skill",""));
-                            recipe.setSkillLvl(Integer.parseInt(result.group(2)));
+                    if (isRaw) {
+                        recipe.setSkill("Gathering");
+                        recipe.setSkillLvl(0);
+                        recipe.setCraftStation("Raw Food");
+                    } else if (isHidden) {
+                        recipe.setSkill("Hidden");
+                        recipe.setSkillLvl(0);
+                        recipe.setCraftStation("None");
+                    } else try {
+                        in.findWithinHorizon("\\[\\s*RequiresSkill\\s*\\(\\s*typeof\\s*\\(\\s*(\\w+)\\s*\\)\\s*,\\s*(\\d+)\\s*\\)\\s*]", 0);
+                        result = in.match();
+                        recipe.setSkill(result.group(1).replaceAll("Skill", ""));
+                        recipe.setSkillLvl(Integer.parseInt(result.group(2)));
 
-                            in.findWithinHorizon("CraftingComponent\\.AddRecipe\\s*\\(\\s*tableType\\s*:\\s*typeof\\s*\\(\\s*(\\w+)\\s*\\)", 0);
-                            result = in.match();
-                            recipe.setCraftStation(result.group(1).replaceAll("Object", ""));
+                        in.findWithinHorizon("CraftingComponent\\.AddRecipe\\s*\\(\\s*tableType\\s*:\\s*typeof\\s*\\(\\s*(\\w+)\\s*\\)", 0);
+                        result = in.match();
+                        recipe.setCraftStation(result.group(1).replaceAll("Object", ""));
 
-                        } catch (Exception e) {
-                            // TODO: search recipes folder
-                            System.out.println("Failed to parse crafting details: " + file.getName());
-                            recipe.setSkill("");
-                            recipe.setSkillLvl(0);
-                            recipe.setCraftStation("");
-                        }
-
-                        // System.out.println(recipe.toString());
-                        recipe.setCount(0);
-                        recipe.setTastiness(-1);
-                        recipeList.add(recipe);
-
-                        in.close();
                     } catch (Exception e) {
-                        System.out.println("Failed to parse " + file.getName());
+                        if (recipeFiles != null) {
+                            for (File recipeFile : recipeFiles) {
+                                if (recipeFile.isFile()) {
+                                    try {
+                                        Scanner inRecipe = new Scanner(new FileReader(recipeFile.getPath()));
+                                        // new CraftingElement<VegetableMedleyItem>(1)
+                                        inRecipe.findWithinHorizon("new\\s*CraftingElement\\s*<\\s*(.+)Item\\s*>\\(", 0);
+                                        MatchResult resultRecipe = inRecipe.match();
+                                        String resultName = resultRecipe.group(1);
+                                        if (recipe.getName().replaceAll("\\s", "").equals(resultName)) {
+                                            System.out.println(recipe.getName() + " found");
+                                            inRecipe = new Scanner(new FileReader(recipeFile.getPath()));
+                                            try {
+                                                inRecipe.findWithinHorizon("\\[\\s*RequiresSkill\\s*\\(\\s*typeof\\s*\\(\\s*(\\w+)\\s*\\)\\s*,\\s*(\\d+)\\s*\\)\\s*]", 0);
+                                                result = inRecipe.match();
+                                                recipe.setSkill(result.group(1).replaceAll("Skill", ""));
+                                                recipe.setSkillLvl(Integer.parseInt(result.group(2)));
+                                            } catch (Exception e3) {
+                                                recipe.setSkill("None");
+                                                recipe.setSkillLvl(0);
+                                            }
+
+                                            inRecipe.findWithinHorizon("CraftingComponent\\.AddRecipe\\s*\\(\\s*tableType\\s*:\\s*typeof\\s*\\(\\s*(\\w+)\\s*\\)", 0);
+                                            result = inRecipe.match();
+                                            recipe.setCraftStation(result.group(1).replaceAll("Object", ""));
+                                            break;
+                                        }
+                                    } catch (Exception e2) {
+                                        System.out.println("Failed to parse crafting details: " + file.getName());
+                                        recipe.setSkill("");
+                                        recipe.setSkillLvl(0);
+                                        recipe.setCraftStation("");
+                                    }
+                                }
+                            }
+                        }
                     }
+
+                    // System.out.println(recipe.toString());
+                    recipe.setCount(0);
+                    recipe.setTastiness(-1);
+                    recipeList.add(recipe);
+
+                    in.close();
+                } catch (Exception e) {
+                    System.out.println("Failed to parse " + file.getName());
                 }
             }
+        }
 
 
     }
@@ -437,23 +478,22 @@ public class EcoFoodController implements Initializable {
             default -> true;
         });*/
         recipeFilteredList.setPredicate(recipe -> {
-            boolean bShow = false;
             if (recipe.getTastiness() == -1 && rbTastedYes.isSelected())
                 return false;
             if (recipe.getTastiness() != -1 && rbTastedNo.isSelected())
                 return false;
-            bShow = switch (recipe.getSkill()) {
-                case "CampfireCooking" -> (recipe.getSkillLvl() == 0 && cbCharred.isSelected()) || (recipe.getSkillLvl() != 0 && cbCampfireCooking.isSelected() && spCampfireCooking.getValue() >= recipe.getSkillLvl());
+            return switch (recipe.getSkill()) {
+                case "CampfireCooking" ->
+                        (recipe.getSkillLvl() == 0 && cbCharred.isSelected()) || (recipe.getSkillLvl() != 0 && cbCampfireCooking.isSelected() && spCampfireCooking.getValue() >= recipe.getSkillLvl());
                 case "Baking" -> cbBaking.isSelected() && spBaking.getValue() >= recipe.getSkillLvl();
                 case "AdvancedBaking" -> cbAdvBaking.isSelected() && spAdvBaking.getValue() >= recipe.getSkillLvl();
                 case "Cooking" -> cbCooking.isSelected() && spCooking.getValue() >= recipe.getSkillLvl();
                 case "AdvancedCooking" -> cbAdvCooking.isSelected() && spAdvCooking.getValue() >= recipe.getSkillLvl();
                 case "Milling" -> cbMilling.isSelected() && spMilling.getValue() >= recipe.getSkillLvl();
-                case "Gathering", "Butchery" -> cbRaw.isSelected();
-                case "Hidden" -> cbHidden.isSelected();
+                case "Gathering", "Butchery", "None" -> cbRaw.isSelected();
+                case "Hidden", "" -> cbHidden.isSelected();
                 default -> true;
             };
-            return bShow;
         });
     }
 
@@ -534,7 +574,6 @@ public class EcoFoodController implements Initializable {
         // new
         for (FoodRecipe recipe : mealFilteredList) recipes.add(new FoodRecipe(recipe));
         Meal meal = new Meal();
-        // TODO
         meal.setName("Name");
         meal.setCount(1);
         meal.setRecipes(recipes);
@@ -633,15 +672,52 @@ public class EcoFoodController implements Initializable {
     }
 
 
-    //TODO Edit
     public void onButtonCreateEdit() {
-        if (tabsFood.getSelectionModel().getSelectedIndex()==0){
+        // create
+        if (tabsFood.getSelectionModel().getSelectedIndex() == 0) {
             Meal meal = updateMeal();
+            String mealName;
+
+            TextInputDialog dialog = new TextInputDialog("Meal");
+            dialog.setTitle("Enter Meal Name");
+            dialog.setHeaderText(null);
+            dialog.setContentText("Name:");
+            Optional<String> result = dialog.showAndWait();
+            if (result.isPresent()) {
+                mealName = result.get();
+            } else {
+                return;
+            }
+            meal.setName(mealName);
             mealList.add(new Meal(meal));
+            tabsFood.getSelectionModel().select(1);
+        }
+        // edit
+        else if (tabsFood.getSelectionModel().getSelectedIndex() == 1) {
+            Meal meal = mealListTable.getSelectionModel().getSelectedItem();
+            if (meal == null) return;
+
+            tabsFood.getSelectionModel().select(0);
+            onButtonResetDelete();
+
+            for (FoodRecipe recipe : meal.getRecipes()) {
+                int index = recipeList.indexOf(recipe);
+                if (index == -1) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Can't Find Food Item");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Couldn't find the item " + recipe.getName() + "!");
+                    alert.showAndWait();
+                    break;
+                }
+                recipeList.get(index).setCount(recipe.getCount());
+            }
+            recipeTable.refresh();
+            mealTable.refresh();
+            updateMeal();
         }
     }
 
-    //TODO Delete
     public void onButtonResetDelete() {
         if (tabsFood.getSelectionModel().getSelectedIndex()==0){
             for (FoodRecipe recipe : recipeList)
@@ -656,11 +732,20 @@ public class EcoFoodController implements Initializable {
     }
 
     public void onButtonSearch() {
-        if (tabsFood.getSelectionModel().getSelectedIndex()!=0) return;
+        if (tabsFood.getSelectionModel().getSelectedIndex() != 0) return;
         Meal meal = updateMeal();
 
-        FXMLLoader loader = new  FXMLLoader(getClass().getResource("MealGeneratorWindow.fxml"));
-        Parent rootGenerator = null;
+        if (meal.getRecipes().size() > 50) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Search Error");
+            alert.setHeaderText("Too many food items");
+            alert.setContentText("You can have a maximum of 50 different food items selected.");
+            alert.showAndWait();
+            return;
+        }
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("MealGeneratorWindow.fxml"));
+        Parent rootGenerator;
         try {
             rootGenerator = loader.load();
         } catch (Exception e) {
@@ -676,9 +761,7 @@ public class EcoFoodController implements Initializable {
         stageGenerator.setTitle("Meal Generator");
         stageGenerator.initModality(Modality.APPLICATION_MODAL);
         stageGenerator.setScene(sceneGenerator);
-        stageGenerator.setOnCloseRequest(e -> {
-            controllerGenerator.cancelTask();
-        });
+        stageGenerator.setOnCloseRequest(e -> controllerGenerator.cancelTask());
         stageGenerator.showAndWait();
     }
 
@@ -712,15 +795,34 @@ public class EcoFoodController implements Initializable {
     }
 
     public void onAddBest() {
-        System.out.println("add best!");
-        Object[] options = {10,15,20,25,30,35,40,45,50};
-        int noItems = 0;
+        Object[] options = {10, 15, 20, 25, 30, 35, 40, 45, 50};
+        int noItems;
         try {
-            noItems = (Integer)(JOptionPane.showInputDialog(null,"How many of the best food items you want to add?\n(will clear the current meal)","Add best", JOptionPane.QUESTION_MESSAGE,null, options,options[4]));
+            noItems = (Integer) (JOptionPane.showInputDialog(null, "How many of the best food items you want to add?\n(will respect selected filters and clear the current meal)", "Add best", JOptionPane.QUESTION_MESSAGE, null, options, options[4]));
         } catch (Exception e) {
             return;
         }
-        //TODO: implement
+        if (tabsFood.getSelectionModel().getSelectedIndex() == 0) {
+            for (FoodRecipe recipe : recipeList) {
+                recipe.setCount(0);
+            }
+            colNutrients.setSortType(TableColumn.SortType.DESCENDING);
+            recipeTable.getSortOrder().clear();
+            recipeTable.getSortOrder().add(colNutrients);
+            if (recipeSortedList.size() < noItems) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Can't Add Best");
+                alert.setHeaderText("Too few food items in the current filtered list");
+                alert.setContentText("Only could add " + recipeSortedList.size() + "/" + noItems + " items! Try changing the filters.");
+                alert.showAndWait();
+                noItems = recipeSortedList.size();
+            }
+            for (int i = 0; i < noItems; i++) {
+                recipeSortedList.get(i).setCount(1);
+            }
+
+            updateMeal();
+        }
         System.out.println("add best: " + noItems);
     }
 
@@ -774,23 +876,22 @@ public class EcoFoodController implements Initializable {
         emulateMealList();
         for (FoodRecipe recipe : emulatedMealListFilteredList) mealsAsRecipes.add(new FoodRecipe(recipe));
         Meal diet = new Meal();
-        // TODO
         diet.setName("Diet");
         diet.setCount(1);
         diet.setRecipes(mealsAsRecipes);
         // TODO: add cravings
-        diet.updateSkillPoints((int) baseGain,skillMultiplier,calcVarietyModifier(),0.3f);
+        diet.updateSkillPoints((int) baseGain, skillMultiplier, calcVarietyModifier(), 0.3f);
 
         labelCalories.setText(Integer.toString(diet.getTotalCalories()));
-        labelCarbs.setText(String.format("%.1f",diet.getTotalCarbs()));
-        labelFats.setText(String.format("%.1f",diet.getTotalFats()));
-        labelProteins.setText(String.format("%.1f",diet.getTotalProteins()));
-        labelVitamins.setText(String.format("%.1f",diet.getTotalVitamins()));
-        labelNutrients.setText(String.format("%.1f",diet.getTotalCarbs()+diet.getTotalFats()+diet.getTotalProteins()+diet.getTotalVitamins()));
-        labelBalanceMultiplier.setText(String.format("%.2f",diet.getBalanceMultiplier()*100)+"%");
-        labelTastiness.setText(String.format("%.2f",diet.getTastinessMultiplier()*100)+"%");
-        labelVariety.setText(String.format("%.2f",diet.getVarietyMultiplier()*100)+"%\n("+countNumUniqueRecipes()+")");
-        labelSkillPoints.setText(String.format("%.1f",diet.getSkillPoints()));
+        labelCarbs.setText(String.format("%.1f", diet.getTotalCarbs()));
+        labelFats.setText(String.format("%.1f", diet.getTotalFats()));
+        labelProteins.setText(String.format("%.1f", diet.getTotalProteins()));
+        labelVitamins.setText(String.format("%.1f", diet.getTotalVitamins()));
+        labelNutrients.setText(String.format("%.1f", diet.getTotalCarbs() + diet.getTotalFats() + diet.getTotalProteins() + diet.getTotalVitamins()));
+        labelBalanceMultiplier.setText(String.format("%.2f", diet.getBalanceMultiplier() * 100) + "%");
+        labelTastiness.setText(String.format("%.2f", diet.getTastinessMultiplier() * 100) + "%");
+        labelVariety.setText(String.format("%.2f", diet.getVarietyMultiplier() * 100) + "% (" + countNumUniqueRecipes() + ")");
+        labelSkillPoints.setText(String.format("%.1f", diet.getSkillPoints()));
 
         pieNutrients.getData().get(0).setPieValue(diet.getTotalCarbs());
         pieNutrients.getData().get(1).setPieValue(diet.getTotalProteins());
