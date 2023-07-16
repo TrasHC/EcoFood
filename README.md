@@ -5,7 +5,7 @@ A calculator to help you find your optimal diet for the game Eco. This program h
 
 Installation:
 
-Just download the .jar and double click it. You need the Java Runtime Environment 8 (JRE8) installed- If double clicking doesn't work, open the terminal and launch the java.exe in the bin folder of the JRE installation path with following parameters: java.exe -jar C:\Downloads\EcoFood.jar (changing the path as appropirate).
+Just download the .jar (on the right under Releases) and double click it. You need the Java Runtime Environment 8 (JRE8) installed. If double clicking doesn't work, open the terminal and launch the java.exe in the bin folder of the JRE installation path with following parameters: java.exe -jar C:\Downloads\EcoFood.jar (changing the path as appropirate).
 
 Recommended Workflow:
 
