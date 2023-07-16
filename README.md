@@ -15,6 +15,6 @@ Recommended Workflow:
 - Click on the search button and in the new window click the generate button. Note to yourself what is the highest score, then increase the number of items per meal by 1 and generate again. Repeat until you are satisfied with the generate meal or generation time gets too long.
 - If you found a promising meal, you can click the Refine Button, to further improve it (it will add the selected meal as a new Food item and then do the same as the Generate Button)
 - Save any meals you want to keep
-- Back in the main window change to the "Meals" Tab to further plan your diet i.e. by adding diverse food items to increase your variety modifier.
+- Back in the main window change to the "Meals" Tab to further plan your diet i.e. by adding diverse food items to increase your variety modifier. The Meal Tab is the only place where the variety multiplier is calculated and also where a 30% craving multipier is added.
 
 Remember to save your plan regularly (File->Save), so you dont loose all your entered Tatstiness values and created meals!
