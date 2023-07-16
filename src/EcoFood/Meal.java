@@ -250,7 +250,7 @@ public class Meal implements Serializable {
             else
                 tastiness += recipe.getCount() * recipe.getTastiness() * recipe.getCalories();
 
-            if (!recipe.getSkill().isBlank()) {
+            if (!recipe.getSkill().matches("\\s*")) {
                 Pattern pattern = Pattern.compile(recipe.getSkill() + "\\s(\\d+)");
                 Matcher matcher = pattern.matcher(skills);
                 if (matcher.find()) {

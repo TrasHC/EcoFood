@@ -37,7 +37,7 @@ public class Main extends Application {
             alert.setContentText("Close the app?");
 
             Optional<ButtonType> result = alert.showAndWait();
-            if (result.get() == ButtonType.OK)
+            if (result.isPresent() && result.get() == ButtonType.OK)
                 primaryStage.close();
         });
 

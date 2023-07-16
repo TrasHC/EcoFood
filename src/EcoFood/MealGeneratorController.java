@@ -106,7 +106,7 @@ public class MealGeneratorController implements Initializable {
         });
 
         UnaryOperator<TextFormatter.Change> filter = change -> {
-            if (change.getText().isBlank()) return change;
+            if (change.getText().matches("\\s*")) return change;
             if (change.getText().matches("[0-9]*") && Integer.parseInt(change.getControlNewText()) <= 20) {
                 //System.out.println(change.getControlNewText());
                 return change;
@@ -115,16 +115,15 @@ public class MealGeneratorController implements Initializable {
         };
         textNumItemsPerMeal.setTextFormatter(new TextFormatter<String>(filter));
         textNumItemsPerMeal.textProperty().addListener((obs, oldValue, newValue) -> {
-            if(!newValue.isBlank()) {
+            if (!newValue.matches("\\s*")) {
                 int numRecipes = recipes.size();
                 int numItemsPerMeal = Integer.parseInt(newValue);
                 textNumCalculations.setText(String.format("%d", binomialCoefficient(numRecipes + numItemsPerMeal - 1, numItemsPerMeal)));
-            }
-            else
+            } else
                 textNumCalculations.setText("1");
         });
         textNumItemsPerMeal.focusedProperty().addListener((obs, oldValue, newValue) -> {
-            if(!newValue && textNumItemsPerMeal.getText().isBlank()) {
+            if (!newValue && textNumItemsPerMeal.getText().matches("\\s*")) {
                 textNumItemsPerMeal.setText("0");
                 textNumCalculations.setText("1");
             }

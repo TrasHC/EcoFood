@@ -272,29 +272,30 @@ public class EcoFoodController implements Initializable {
                 onFilterChange());
 
         UnaryOperator<TextFormatter.Change> filter = change -> {
-            if (change.getText().isBlank()) return change;
+            //if (change.getText().isBlank()) return change;
+            if (change.getText().matches("\\s*")) return change;
             if (change.getText().matches("\\d*")) return change;
             return null;
         };
         textSkillMultiplier.setTextFormatter(new TextFormatter<String>(filter));
         textSkillMultiplier.textProperty().addListener((obs, oldValue, newValue) -> {
-            if(!newValue.isBlank()) {
+            if (!newValue.matches("\\s*")) {
                 updateMeal();
             }
         });
         textSkillMultiplier.focusedProperty().addListener((obs, oldValue, newValue) -> {
-            if(!newValue && textSkillMultiplier.getText().isBlank()) {
+            if (!newValue && textSkillMultiplier.getText().matches("\\s*")) {
                 textSkillMultiplier.setText("0");
                 updateMeal();
             }
         });
         textBaseGain.setTextFormatter(new TextFormatter<String>(filter));
         textBaseGain.textProperty().addListener((obs, oldValue, newValue) -> {
-            if(!newValue.isBlank())
+            if (!newValue.matches("\\s*"))
                 updateMeal();
         });
         textBaseGain.focusedProperty().addListener((obs, oldValue, newValue) -> {
-            if(!newValue && textBaseGain.getText().isBlank()) {
+            if (!newValue && textBaseGain.getText().matches("\\s*")) {
                 textBaseGain.setText("0");
                 updateMeal();
             }
@@ -304,6 +305,7 @@ public class EcoFoodController implements Initializable {
             if (newTab.getText().equals("Meal Creator")){
                 buttonCreateEdit.setText("Create");
                 buttonResetDelete.setText("Reset");
+                buttonSearch.setDisable(false);
                 miAddBest.setDisable(false);
                 mealTable.setItems(mealFilteredList);
                 labelVariety.setVisible(false);
@@ -312,6 +314,7 @@ public class EcoFoodController implements Initializable {
             else if (newTab.getText().equals("Meals")){
                 buttonCreateEdit.setText("Edit");
                 buttonResetDelete.setText("Delete");
+                buttonSearch.setDisable(true);
                 labelVariety.setVisible(true);
                 miAddBest.setDisable(true);
                 updateDiet();
@@ -421,7 +424,7 @@ public class EcoFoodController implements Initializable {
                                         MatchResult resultRecipe = inRecipe.match();
                                         String resultName = resultRecipe.group(1);
                                         if (recipe.getName().replaceAll("\\s", "").equals(resultName)) {
-                                            System.out.println(recipe.getName() + " found");
+                                            // System.out.println(recipe.getName() + " found");
                                             inRecipe = new Scanner(new FileReader(recipeFile.getPath()));
                                             try {
                                                 inRecipe.findWithinHorizon("\\[\\s*RequiresSkill\\s*\\(\\s*typeof\\s*\\(\\s*(\\w+)\\s*\\)\\s*,\\s*(\\d+)\\s*\\)\\s*]", 0);
@@ -482,18 +485,39 @@ public class EcoFoodController implements Initializable {
                 return false;
             if (recipe.getTastiness() != -1 && rbTastedNo.isSelected())
                 return false;
-            return switch (recipe.getSkill()) {
-                case "CampfireCooking" ->
-                        (recipe.getSkillLvl() == 0 && cbCharred.isSelected()) || (recipe.getSkillLvl() != 0 && cbCampfireCooking.isSelected() && spCampfireCooking.getValue() >= recipe.getSkillLvl());
-                case "Baking" -> cbBaking.isSelected() && spBaking.getValue() >= recipe.getSkillLvl();
-                case "AdvancedBaking" -> cbAdvBaking.isSelected() && spAdvBaking.getValue() >= recipe.getSkillLvl();
-                case "Cooking" -> cbCooking.isSelected() && spCooking.getValue() >= recipe.getSkillLvl();
-                case "AdvancedCooking" -> cbAdvCooking.isSelected() && spAdvCooking.getValue() >= recipe.getSkillLvl();
-                case "Milling" -> cbMilling.isSelected() && spMilling.getValue() >= recipe.getSkillLvl();
-                case "Gathering", "Butchery", "None" -> cbRaw.isSelected();
-                case "Hidden", "" -> cbHidden.isSelected();
-                default -> true;
-            };
+            boolean bShow = true;
+            switch (recipe.getSkill()) {
+                case "CampfireCooking":
+                    bShow = (recipe.getSkillLvl() == 0 && cbCharred.isSelected()) || (recipe.getSkillLvl() != 0 && cbCampfireCooking.isSelected() && spCampfireCooking.getValue() >= recipe.getSkillLvl());
+                    break;
+                case "Baking":
+                    bShow = cbBaking.isSelected() && spBaking.getValue() >= recipe.getSkillLvl();
+                    break;
+                case "AdvancedBaking":
+                    bShow = cbAdvBaking.isSelected() && spAdvBaking.getValue() >= recipe.getSkillLvl();
+                    break;
+                case "Cooking":
+                    bShow = cbCooking.isSelected() && spCooking.getValue() >= recipe.getSkillLvl();
+                    break;
+                case "AdvancedCooking":
+                    bShow = cbAdvCooking.isSelected() && spAdvCooking.getValue() >= recipe.getSkillLvl();
+                    break;
+                case "Milling":
+                    bShow = cbMilling.isSelected() && spMilling.getValue() >= recipe.getSkillLvl();
+                    break;
+                case "Gathering":
+                case "Butchery":
+                case "None":
+                    bShow = cbRaw.isSelected();
+                    break;
+                case "Hidden":
+                case "":
+                    bShow = cbHidden.isSelected();
+                    break;
+                default:
+                    bShow = true;
+            }
+            return bShow;
         });
     }
 
@@ -828,7 +852,7 @@ public class EcoFoodController implements Initializable {
 
     public double getBaseGain() {
         int baseGain = 0;
-        if (!textBaseGain.getText().isBlank())
+        if (!textBaseGain.getText().matches("\\s*"))
             baseGain = Integer.parseInt(textBaseGain.getText());
         else textBaseGain.setText("0");
         return baseGain;
@@ -836,7 +860,7 @@ public class EcoFoodController implements Initializable {
 
     public double getSkillMultiplier() {
         int skillMultiplier = 0;
-        if (!textSkillMultiplier.getText().isBlank())
+        if (!textSkillMultiplier.getText().matches("\\s*"))
             skillMultiplier = Integer.parseInt(textSkillMultiplier.getText());
         else textSkillMultiplier.setText("0");
         return skillMultiplier;
