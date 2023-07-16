@@ -1,5 +1,6 @@
 # EcoFood
 ![EcoFood](grafik.png)
+
 A calculator to help you find your optimal diet for the game Eco. This program has been developed over the course of several years, with long breaks in between, with repeated major changes and without any prior planning, while at the same time learning JavaFX for the first time. So if you want to look at or work with the code, be warned: it's an uncommented mess! :p
 
 Installation: 
