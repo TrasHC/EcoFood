@@ -9,10 +9,10 @@ Just download the .jar (on the right under Releases) and double click it. You ne
 
 Recommended Workflow:
 
-- Import the available food items directly from Eco: File->Import from Eco.
+- Import the available food items directly from Eco, make sure to select the root folder of your ECO install: File->Import from Eco.
   No support for modded food items, but if they are implemented in .cs files similar to the core game files, you should be able to import them by copying them over to the Food, Recipe and Seed folders in ..\Eco\Eco_Data\Server\Mods\\\_\_core\_\_\AutoGen.
 - Set the tastiness of food items you tried: click three times on the Tastiness coloumn of a food item to set its tastiness, "-1" mean not tasted yet.
-- When you have tried enough new food items, ad the 20-30 best food items (highest score) to the meal: Edit->Add Best
+- When you have tried enough new food items, ad the 20-30 best food items (highest score) to the meal, make sure you have the filters set to only show tasted food: Edit->Add Best
 - Click on the search button and in the new window click the generate button. Note to yourself what is the highest score, then increase the number of items per meal by 1 and generate again. Repeat until you are satisfied with the generate meal or generation time gets too long.
 - If you found a promising meal, you can click the Refine Button, to further improve it (it will add the selected meal as a new Food item and then do the same as the Generate Button)
 - Save any meals you want to keep
